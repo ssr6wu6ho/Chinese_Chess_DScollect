@@ -42,7 +42,6 @@ void AlphaBetaAndTT::getBestStep(int* _Board,int* _Pieces,int* _PiecesInBoard,bo
     }
     for(auto iter=possibleSteps.begin();iter!=possibleSteps.end();iter++){
         node_count++;
-
         fakeMove(*iter);
         value=-NegaMax(DEPTH-1,-LARGENUMBER,LARGENUMBER);
         backFakeMove(*iter);
@@ -52,7 +51,7 @@ void AlphaBetaAndTT::getBestStep(int* _Board,int* _Pieces,int* _PiecesInBoard,bo
         }
         //showStep(*iter,value,false);      如果想显示每一次节点就这个
     }
-     int time_end=clock();
+    int time_end=clock();
     qDebug()<<"AlphaBeta__TT:"<<"共遍历"<<node_count<<"个节点,调用"<<evaluate_count<<"次估值函数,"<<"耗时"<<(time_end-time_begin)/1000<<"秒";
     qDeleteAll(possibleSteps);
     showStep(bestStep,maxValue,true);
@@ -64,8 +63,7 @@ int AlphaBetaAndTT::NegaMax(int depth, int alpha, int beta){
     node_count++;
     nDistance++;
     //是否结束游戏
-    if(isWin()){
-        nDistance--;
+    if(Pieces[31]==0||Pieces[47]==0){
         return -(80080-nDistance);
     }
     //检测重复局面(考虑应该返回的分数)

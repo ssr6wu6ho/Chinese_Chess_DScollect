@@ -31,6 +31,7 @@ public:
     int NegaMax(int,int,int);//负极大值搜索
     int SearchLeafNode(int,int,int,bool);
     void showStep(Step*,int,bool);
+    void showSteps(QVector<Step*> steps);
 public slots:
     void getBestStep(int*,int*,int*,bool,int);//获取最佳分数
 

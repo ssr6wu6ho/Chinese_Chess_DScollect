@@ -58,7 +58,7 @@ void AlphaBetaAndHistory::getBestStep(int* _Board,int* _Pieces,int* _PiecesInBoa
         case 13:chess="红兵";break;
         case 14:chess="红将";break;
         }
-        fakeMove(*iter);
+        fakeMove(*iter); //先走完第一步探索以下最高值的步数
         nDistance++;
         if(Pieces[31]==0||Pieces[47]==0){
             maxValue=80080-nDistance;
@@ -113,6 +113,9 @@ void AlphaBetaAndHistory::getBestStep(int* _Board,int* _Pieces,int* _PiecesInBoa
 //负极大值
 int AlphaBetaAndHistory::NegaMax(int depth, int alpha, int beta){
     node_count++;
+    if(Pieces[31]==0||Pieces[47]==0){
+        return -(80080-nDistance);
+    }
     if(depth<=0){
         evaluate_count++;
         if(MoveSide){
@@ -185,4 +188,65 @@ void AlphaBetaAndHistory::backFakeMove(Step *step){
         Pieces[step->Dst_PiecesId]=step->Dst_Position;
     }
     MoveSide=!MoveSide;
+}
+
+//显示步骤
+void AlphaBetaAndHistory::showStep(Step* step, int value, bool flag){
+    int x_src=(step)->Src_Position%16-3;
+    int y_src=(step)->Src_Position/16-3;
+    int x_dst=(step)->Dst_Position%16-3;
+    int y_dst=(step)->Dst_Position/16-3;
+    QString chess;
+    switch (this->Board[(step)->Src_Position]) {
+    case 16:chess="黑車";break;
+    case 17:chess="黑马";break;
+    case 18:chess="黑炮";break;
+    case 19:chess="黑象";break;
+    case 20:chess="黑士";break;
+    case 21:chess="黑兵";break;
+    case 22:chess="黑将";break;
+    case 8:chess="红車";break;
+    case 9:chess="红马";break;
+    case 10:chess="红炮";break;
+    case 11:chess="红象";break;
+    case 12:chess="红士";break;
+    case 13:chess="红兵";break;
+    case 14:chess="红将";break;
+    }
+    if(!flag){
+        qDebug()<<this->PiecesInBoard[(step)->Src_Position]<<chess<<"("<<x_src<<","<<y_src<<")"
+                 <<"---->"<<"("<<x_dst<<","<<y_dst<<")"<<"得分"<<value;
+    }else{
+        qDebug()<<"最佳步骤："<<this->PiecesInBoard[(step)->Src_Position]<<chess<<"("<<x_src<<","<<y_src<<")"
+                 <<"---->"<<"("<<x_dst<<","<<y_dst<<")"<<"得分"<<value;
+    }
+
+}
+
+void AlphaBetaAndHistory::showSteps(QVector<Step*> steps){
+    for(auto iter=steps.begin();iter!=steps.end();iter++){
+        int x_src=(*iter)->Src_Position%16-3;
+        int y_src=(*iter)->Src_Position/16-3;
+        int x_dst=(*iter)->Dst_Position%16-3;
+        int y_dst=(*iter)->Dst_Position/16-3;
+        QString chess;
+        switch (this->Board[(*iter)->Src_Position]) {
+        case 16:chess="黑車";break;
+        case 17:chess="黑马";break;
+        case 18:chess="黑炮";break;
+        case 19:chess="黑象";break;
+        case 20:chess="黑士";break;
+        case 21:chess="黑兵";break;
+        case 22:chess="黑将";break;
+        case 8:chess="红車";break;
+        case 9:chess="红马";break;
+        case 10:chess="红炮";break;
+        case 11:chess="红象";break;
+        case 12:chess="红士";break;
+        case 13:chess="红兵";break;
+        case 14:chess="红将";break;
+        }
+        qDebug()<<this->PiecesInBoard[(*iter)->Src_Position]<<chess<<"("<<x_src<<","<<y_src<<")"
+                 <<"---->"<<"("<<x_dst<<","<<y_dst<<")";
+    }
 }

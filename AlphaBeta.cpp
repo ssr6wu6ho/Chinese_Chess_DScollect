@@ -20,51 +20,56 @@ void AlphaBeta::getBestStep(int* _Board,int* _Pieces,int* _PiecesInBoard,bool co
     //估值函数
     evaluate_count=0;//evaluate计数
     node_count=0;//节点计数    nDistance=0;//实际走的深度（与根节点的距离）
+    nDistance=0;//实际走的深度（与根节点的距离）
     MoveSide=computerColor;//走棋方颜色
+
     int maxValue=-LARGENUMBER;
     Step* bestStep=new Step();
     int value;//暂存
     QVector<Step*> possibleSteps;
-    if(computerColor){  //如果是红就调用红放的函数
-        MoveGeneratorR MVR = MoveGeneratorR(this->Board,this->Pieces,this->PiecesInBoard);
+    //根据走棋方获取不同棋路
+    if(computerColor){
+        MoveGeneratorR MVR = MoveGeneratorR(Board,Pieces,PiecesInBoard);
         MVR.getAllPossibleSteps(possibleSteps);
     }else{
-        MoveGeneratorB MVB = MoveGeneratorB(this->Board,this->Pieces,this->PiecesInBoard);
+        MoveGeneratorB MVB = MoveGeneratorB(Board,Pieces,PiecesInBoard);
         MVB.getAllPossibleSteps(possibleSteps);
     }
     for(auto iter=possibleSteps.begin();iter!=possibleSteps.end();iter++){  //auto自动识别变量类型
+        node_count++;
         fakeMove(*iter);        //先走完第一步探索以下最高值的步数
+        //nDistance++;
         value=-NegaMax(DEPTH-1,-LARGENUMBER,LARGENUMBER);   //ab
         backFakeMove(*iter);
-            maxValue=value;
         if(value>maxValue){
+            maxValue=value;
             *bestStep=*(*iter);
         }
-        showStep(*iter,value,false);//显示步骤信息
+        //showStep(*iter,value,false);//显示步骤信息
     }
+    int time_end=clock();
     qDeleteAll(possibleSteps);  //删除，释放内存
     showStep(bestStep,maxValue,true);
-    int time_end=clock();
     qDebug()<<"共遍历"<<node_count<<"个节点,调用"<<evaluate_count<<"次估值函数,"<<"耗时"<<(time_end-time_begin)/1000<<"秒";
     emit endSearch(bestStep);   //停止搜索，下棋
 }
 //负极大值                  4-1
 int AlphaBeta::NegaMax(int depth, int alpha, int beta){
     node_count++;
+    nDistance++;
     //是否胜利
     if(Pieces[31]==0||Pieces[47]==0){
         return -(80080-nDistance);
     }
-    nDistance++;
     //叶子节点估值
     if(depth<=0){
         evaluate_count++;
-        nDistance--;
         if(MoveSide){
             return -EV->evaluateGame();
         }else{
             return EV->evaluateGame();
         }
+        nDistance--;
     }
     int value;
     QVector<Step*> steps;
@@ -104,6 +109,19 @@ void AlphaBeta::fakeMove(Step *step){
     MoveSide=!MoveSide;
 }
 
+//撤回移动
+void AlphaBeta::backFakeMove(Step *step){
+    Board[step->Src_Position]=step->Src_PiecesType;
+    PiecesInBoard[step->Src_Position]=step->Src_PiecesId;
+    Pieces[step->Src_PiecesId]=step->Src_Position;
+    Board[step->Dst_Position]=step->Dst_PiecesType;
+    PiecesInBoard[step->Dst_Position]=step->Dst_PiecesId;
+    if(step->Dst_PiecesId!=0){//目标位置以前有棋子
+        Pieces[step->Dst_PiecesId]=step->Dst_Position;
+    }
+    MoveSide=!MoveSide;
+}
+
 //显示步骤
 void AlphaBeta::showStep(Step* step, int value, bool flag){
     int x_src=(step)->Src_Position%16-3;
@@ -134,19 +152,5 @@ void AlphaBeta::showStep(Step* step, int value, bool flag){
         qDebug()<<"AlphaBeta:"<<"最佳步骤："<<this->PiecesInBoard[(step)->Src_Position]<<chess<<"("<<x_src<<","<<y_src<<")"
                                                      <<"---->"<<"("<<x_dst<<","<<y_dst<<")"<<"得分"<<value;
     }
-
 }
 
-
-//撤回移动
-void AlphaBeta::backFakeMove(Step *step){
-    Board[step->Src_Position]=step->Src_PiecesType;
-    PiecesInBoard[step->Src_Position]=step->Src_PiecesId;
-    Pieces[step->Src_PiecesId]=step->Src_Position;
-    Board[step->Dst_Position]=step->Dst_PiecesType;
-    PiecesInBoard[step->Dst_Position]=step->Dst_PiecesId;
-    if(step->Dst_PiecesId!=0){//目标位置以前有棋子
-        Pieces[step->Dst_PiecesId]=step->Dst_Position;
-    }
-    MoveSide=!MoveSide;
-}

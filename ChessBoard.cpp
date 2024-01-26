@@ -910,8 +910,10 @@ void ChessBoard::doComputerGo(){
     //两边不同的随机数，得让两边处于不同算法，否则死局
     if(numberOfstep>=20){
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-    diffcult_choice_black=qrand()%n_alg;
-    diffcult_choice_red=qrand()%n_alg;
+        diffcult_choice_black=0;
+        diffcult_choice_red=0;
+    //diffcult_choice_black=qrand()%n_alg;
+    //diffcult_choice_red=qrand()%n_alg;
     numberOfstep=0;
     }
 
@@ -920,7 +922,7 @@ void ChessBoard::doComputerGo(){
        // emit startIDAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,7,AllMovedSteps);    //简单深度
     switch(diffcult_choice_red){
         case 0:
-            emit startIDAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,10,AllMovedSteps);
+            emit startAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,4);
             break;
         case 1:
             emit startAlphaBetaAndHistory(Board,Pieces,PiecesInBoard,computerColor,4);
@@ -943,7 +945,7 @@ void ChessBoard::doComputerGo(){
         //emit startAlphaBetaAndHistory(Board,Pieces,PiecesInBoard,computerColor,4);
         switch(diffcult_choice_black){
         case 0:
-            emit startIDAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,10,AllMovedSteps);
+            emit startAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,4);
             break;
         case 1:
             emit startAlphaBetaAndHistory(Board,Pieces,PiecesInBoard,computerColor,4);
