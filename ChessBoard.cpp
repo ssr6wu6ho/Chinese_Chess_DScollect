@@ -376,7 +376,7 @@ void ChessBoard::showLastStep(){
     if(number_step%2==0){
         switch(diffcult_choice_red){
             case 0:
-                file.write("   红:ID_AB_10",14);
+                file.write("   红:AB_4",10);
                 break;
             case 1:
                 file.write("   红:HH_AB_4",13);
@@ -396,7 +396,7 @@ void ChessBoard::showLastStep(){
             }
         switch(diffcult_choice_black){
             case 0:
-                file.write("   黑:ID_AB_10",14);
+                file.write("   黑:AB_7",10);
                 break;
             case 1:
                 file.write("   黑:HH_AB_4",13);
@@ -910,8 +910,8 @@ void ChessBoard::doComputerGo(){
     //两边不同的随机数，得让两边处于不同算法，否则死局
     if(numberOfstep>=20){
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-        diffcult_choice_black=0;
-        diffcult_choice_red=0;
+        diffcult_choice_black=1;
+        diffcult_choice_red=1;
     //diffcult_choice_black=qrand()%n_alg;
     //diffcult_choice_red=qrand()%n_alg;
     numberOfstep=0;

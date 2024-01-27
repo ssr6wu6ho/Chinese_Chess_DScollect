@@ -23,6 +23,7 @@ void AlphaBetaAndHistory::getBestStep(int* _Board,int* _Pieces,int* _PiecesInBoa
     node_count=0;//节点计数
     nDistance=0;//实际走的深度（与根节点的距离）
     MoveSide=computerColor;//走棋方颜色
+
     int maxValue=-LARGENUMBER;
     Step* bestStep=new Step();
     int value;//暂存
@@ -36,76 +37,19 @@ void AlphaBetaAndHistory::getBestStep(int* _Board,int* _Pieces,int* _PiecesInBoa
     }
     for(auto iter=possibleSteps.begin();iter!=possibleSteps.end();iter++){
         node_count++;
-
-        int x_src=(*iter)->Src_Position%16-3;
-        int y_src=(*iter)->Src_Position/16-3;
-        int x_dst=(*iter)->Dst_Position%16-3;
-        int y_dst=(*iter)->Dst_Position/16-3;
-        QString chess;
-        switch (Board[(*iter)->Src_Position]) {
-        case 16:chess="黑車";break;
-        case 17:chess="黑马";break;
-        case 18:chess="黑炮";break;
-        case 19:chess="黑象";break;
-        case 20:chess="黑士";break;
-        case 21:chess="黑兵";break;
-        case 22:chess="黑将";break;
-        case 8:chess="红車";break;
-        case 9:chess="红马";break;
-        case 10:chess="红炮";break;
-        case 11:chess="红象";break;
-        case 12:chess="红士";break;
-        case 13:chess="红兵";break;
-        case 14:chess="红将";break;
-        }
         fakeMove(*iter); //先走完第一步探索以下最高值的步数
-        nDistance++;
-        if(Pieces[31]==0||Pieces[47]==0){
-            maxValue=80080-nDistance;
-            *bestStep=*(*iter);
-          //  qDebug()<<this->PiecesInBoard[(*iter)->Src_Position]<<chess<<"("<<x_src<<","<<y_src<<")"
-          //                                               <<"---->"<<"("<<x_dst<<","<<y_dst<<")"<<"得分"<<maxValue;
-            backFakeMove(*iter);
-            nDistance--;
-            break;
-        }
         value=-NegaMax(DEPTH-1,-LARGENUMBER,LARGENUMBER);
         backFakeMove(*iter);
-        nDistance--;
         if(value>maxValue){
             maxValue=value;
             *bestStep=*(*iter);
         }
-      //  qDebug()<<PiecesInBoard[(*iter)->Src_Position]<<chess<<"("<<x_src<<","<<y_src<<")"
-        //                                             <<"---->"<<"("<<x_dst<<","<<y_dst<<")"<<"得分"<<value;
     }
+    int time_end=clock();
     qDeleteAll(possibleSteps);
     //清空历史表
     HH->initHistoryTable();
-    int x_src=bestStep->Src_Position%16-3;
-    int y_src=bestStep->Src_Position/16-3;
-    int x_dst=bestStep->Dst_Position%16-3;
-    int y_dst=bestStep->Dst_Position/16-3;
-    QString chess;
-    switch (Board[bestStep->Src_Position]) {
-    case 16:chess="黑車";break;
-    case 17:chess="黑马";break;
-    case 18:chess="黑炮";break;
-    case 19:chess="黑象";break;
-    case 20:chess="黑士";break;
-    case 21:chess="黑兵";break;
-    case 22:chess="黑将";break;
-    case 8:chess="红車";break;
-    case 9:chess="红马";break;
-    case 10:chess="红炮";break;
-    case 11:chess="红象";break;
-    case 12:chess="红士";break;
-    case 13:chess="红兵";break;
-    case 14:chess="红将";break;
-    }
-    qDebug()<<"AlphaBeta_History:"<<"最佳步骤："<<PiecesInBoard[bestStep->Src_Position]<<chess
-           <<"("<<x_src<<","<<y_src<<")"<<"---->"<<"("<<x_dst<<","<<y_dst<<")"<<"得分"<<maxValue;
-    int time_end=clock();
+    showStep(bestStep,maxValue,true);
     qDebug()<<"共遍历"<<node_count<<"个节点,调用"<<evaluate_count<<"次估值函数,"<<"耗时"<<(time_end-time_begin)/1000<<"秒";
     emit endSearch(bestStep);
 }
@@ -113,6 +57,7 @@ void AlphaBetaAndHistory::getBestStep(int* _Board,int* _Pieces,int* _PiecesInBoa
 //负极大值
 int AlphaBetaAndHistory::NegaMax(int depth, int alpha, int beta){
     node_count++;
+    nDistance++;
     if(Pieces[31]==0||Pieces[47]==0){
         return -(80080-nDistance);
     }
@@ -123,6 +68,7 @@ int AlphaBetaAndHistory::NegaMax(int depth, int alpha, int beta){
         }else{
             return EV->evaluateGame();
         }
+        nDistance--;
     }
 
     int value;
@@ -141,17 +87,8 @@ int AlphaBetaAndHistory::NegaMax(int depth, int alpha, int beta){
     //遍历走棋
     for(auto iter=steps.begin();iter!=steps.end();iter++){
         fakeMove(*iter);
-        nDistance++;
-        if(Pieces[31]==0||Pieces[47]==0){
-            return -(80080-nDistance);
-            /*alpha=80080-nDistance;
-            backFakeMove(*iter);
-            nDistance--;
-            break;*/
-        }
         value=-NegaMax(depth-1,-beta,-alpha);
         backFakeMove(*iter);
-        nDistance--;
         if(value>alpha){
             alpha=value;
             bestStep=*iter;//更新最佳步
@@ -163,6 +100,7 @@ int AlphaBetaAndHistory::NegaMax(int depth, int alpha, int beta){
     //添加历史记录表
     HH->addHistoryScore(bestStep,depth);      // 把最佳棋路记录下来，累加
     qDeleteAll(steps);
+    nDistance--;
     return alpha;
 }
 
