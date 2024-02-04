@@ -28,6 +28,7 @@ void AlphaBetaAndTT::getBestStep(int* _Board,int* _Pieces,int* _PiecesInBoard,bo
     node_count=0;//节点计数
     nDistance=0;//距离根节点距离
     MoveSide=computerColor;//走棋方颜色
+
     Zobrist=TT->getZobrist(computerColor);//获取当前走棋方的ZobristHash初始值
     int maxValue=-LARGENUMBER;
     Step* bestStep=new Step();
@@ -108,6 +109,7 @@ int AlphaBetaAndTT::NegaMax(int depth, int alpha, int beta){
         fakeMove(*iter);
         value=-NegaMax(depth-1,-beta,-alpha);
         backFakeMove(*iter);
+
         if(value>=beta){//beta剪枝
             value_type=1;//下界值
             alpha=value;

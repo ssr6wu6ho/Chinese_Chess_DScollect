@@ -86,6 +86,7 @@ int AlphaBeta::NegaMax(int depth, int alpha, int beta){
         fakeMove(*iter);        //换边
         value=-NegaMax(depth-1,-beta,-alpha);   //递归调用，b传下去只是一个参考值，仅仅用来判断剪枝
         backFakeMove(*iter);    //换边(回溯)
+
         if(value>alpha){
             alpha=value;
             if(alpha>=beta){    //剪枝

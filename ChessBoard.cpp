@@ -376,42 +376,42 @@ void ChessBoard::showLastStep(){
     if(number_step%2==0){
         switch(diffcult_choice_red){
             case 0:
-                file.write("   红:AB_4",10);
+                file.write("   红:AB_2",11);
                 break;
             case 1:
-                file.write("   红:HH_AB_4",13);
+                file.write("   红:HH_AB_4",14);
                 break;
             case 2:
-                file.write("   红:TH_AB_4",13);
+                file.write("   红:TH_AB_4",14);
                 break;
             case 3:
-                file.write("   红:TT_AB_4",13);
+                file.write("   红:TT_AB_4",14);
                 break;
             case 4:
-                file.write("   红:ID_AB_7",13);
+                file.write("   红:ID_AB_7",14);
                 break;
             case 5:
-                file.write("   红:AB_7",10);
+                file.write("   红:AB_3",11);
                 break;
             }
         switch(diffcult_choice_black){
             case 0:
-                file.write("   黑:AB_7",10);
+                file.write("   黑:AB_2",11);
                 break;
             case 1:
-                file.write("   黑:HH_AB_4",13);
+                file.write("   黑:HH_AB_4",14);
                 break;
             case 2:
-                file.write("   黑:TH_AB_4",13);
+                file.write("   黑:TH_AB_4",14);
                 break;
             case 3:
-                file.write("   黑:TT_AB_4",13);
+                file.write("   黑:TT_AB_4",14);
                 break;
             case 4:
-                file.write("   黑:ID_AB_7",13);
+                file.write("   黑:ID_AB_7",14);
                 break;
             case 5:
-                file.write("   黑:AB_7",10);
+                file.write("   黑:AB_3",11);
                 break;
             }
         file.write("\n");
@@ -908,12 +908,12 @@ void ChessBoard::doComputerGo(){
         return;
     }
     //两边不同的随机数，得让两边处于不同算法，否则死局
-    if(numberOfstep>=20){
+    if(numberOfstep>=10){
     qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-        diffcult_choice_black=1;
-        diffcult_choice_red=1;
-    //diffcult_choice_black=qrand()%n_alg;
-    //diffcult_choice_red=qrand()%n_alg;
+    //diffcult_choice_black=5;
+    //diffcult_choice_red=5;
+    diffcult_choice_black=qrand()%n_alg;
+    diffcult_choice_red=qrand()%n_alg;
     numberOfstep=0;
     }
 
@@ -922,7 +922,7 @@ void ChessBoard::doComputerGo(){
        // emit startIDAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,7,AllMovedSteps);    //简单深度
     switch(diffcult_choice_red){
         case 0:
-            emit startAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,4);
+            emit startAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,2);
             break;
         case 1:
             emit startAlphaBetaAndHistory(Board,Pieces,PiecesInBoard,computerColor,4);
@@ -937,7 +937,7 @@ void ChessBoard::doComputerGo(){
             emit startIDAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,7,AllMovedSteps);    //简单深度
             break;
         case 5:
-            emit  startAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,7);
+            emit  startAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,3);
             break;
         }
     }
@@ -945,7 +945,7 @@ void ChessBoard::doComputerGo(){
         //emit startAlphaBetaAndHistory(Board,Pieces,PiecesInBoard,computerColor,4);
         switch(diffcult_choice_black){
         case 0:
-            emit startAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,4);
+            emit startAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,2);
             break;
         case 1:
             emit startAlphaBetaAndHistory(Board,Pieces,PiecesInBoard,computerColor,4);
@@ -960,7 +960,7 @@ void ChessBoard::doComputerGo(){
             emit startIDAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,7,AllMovedSteps);    //简单深度
             break;
         case 5:
-            emit  startAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,7);
+            emit  startAlphaBeta(Board,Pieces,PiecesInBoard,computerColor,3);
             break;
         }
     }
